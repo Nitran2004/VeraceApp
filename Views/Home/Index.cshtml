@@ -1,0 +1,543 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurante App</title>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-pEc06c4Iqik4CkO9L+9muypmvPUpZ2pA0x6LgjiTQ3vK8fO/hk6V8aXOOemKu66PCY8XakP+e6OpYJ4Y3L6VUw=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+        }
+
+        /* Header Style */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .menu-icon {
+            font-size: 24px;
+            color: #333;
+            cursor: pointer;
+            display: none;
+        }
+
+        .logo {
+            height: 40px;
+        }
+
+        .logo-mobile {
+            display: none;
+        }
+
+        .cart-icon {
+            display: none;
+        }
+
+        .user-menu {
+            background-color: #ffcc00;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: #333;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .user-icon {
+            margin-right: 5px;
+        }
+
+        /* Main Navigation */
+        .main-nav {
+            display: flex;
+            padding: 15px 5%;
+            background-color: white;
+            border-bottom: 1px solid #eee;
+        }
+
+        .main-nav a {
+            margin-right: 30px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Category Navigation */
+        .category-nav {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+            background-color: white;
+            border-bottom: 1px solid #eee;
+            overflow-x: auto;
+        }
+
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+
+        .category-text {
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .active-category {
+            color: #ff8c00;
+            border-bottom: 3px solid #ff8c00;
+            padding-bottom: 5px;
+        }
+
+        /* Products Section */
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin: 30px 5%;
+        }
+
+        .products-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            padding: 0 4%;
+            gap: 20px;
+        }
+
+        .product-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            width: calc(20% - 20px);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 180px;
+            object-fit: contain;
+            padding: 20px;
+        }
+
+        .product-name {
+            text-align: center;
+            font-weight: bold;
+            padding: 15px;
+            font-size: 16px;
+        }
+
+        /* Mobile Bottom Navigation */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: white;
+            padding: 10px 0;
+            border-top: 1px solid #e0e0e0;
+            z-index: 100;
+        }
+
+        /* Hero Banner with cocktail */
+        .hero-banner {
+            display: none;
+            position: relative;
+        }
+
+        .carousel-container {
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .carousel-slide {
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
+
+        /* Promo section */
+        .promo-section {
+            display: none;
+        }
+        
+        .promo-card {
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            overflow: hidden;
+            background-color: white;
+            transition: transform 0.3s ease;
+        }
+
+        /* Media Queries for Responsiveness */
+        media (max-width: 1024px) {
+            .product-card {
+                width: calc(25% - 20px);
+            }
+        }
+
+        media (max-width: 768px) {
+            .product-card {
+                width: calc(33.333% - 20px);
+            }
+            
+            .menu-icon {
+                display: block;
+            }
+
+            .main-nav {
+                display: none;
+            }
+        }
+
+                media (max-width: 600px) {
+            /* Switch to mobile layout */
+            body {
+                background-color: white;
+            }
+
+            .header {
+                padding: 15px 20px;
+                box-shadow: none;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .logo {
+                display: none;
+            }
+            
+            .logo-mobile {
+                display: block;
+                font-size: 20px;
+                font-weight: bold;
+                color: #542700;
+            }
+            
+            .user-menu {
+                display: none;
+            }
+
+            .cart-icon {
+                display: block;
+                font-size: 24px;
+            }
+            
+            .category-nav {
+                display: flex;
+                justify-content: space-around;
+                padding: 10px 0;
+                border-bottom: none;
+                background-color: #f9f9f9;
+            }
+            
+            .category-nav a {
+                width: 25%;
+                text-align: center;
+            }
+            
+            .category-item {
+                margin: 0;
+                width: 100%;
+            }
+            
+            .category-icon {
+                width: 30px;
+                height: 30px;
+                margin-bottom: 5px;
+            }
+            
+            .category-text {
+                font-size: 12px;
+            }
+            
+            /* Show hero banner in mobile view */
+            .hero-banner {
+                display: block;
+                width: 100%;
+                margin: 15px 0;
+            }
+            
+            .carousel-container {
+                padding: 0 10px;
+            }
+            
+            .carousel-slide {
+                border-radius: 20px;
+                overflow: hidden;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+            
+            .hero-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                border-radius: 20px;
+            }
+            
+            /* Mobile layout for promo section */
+            .promo-section {
+                display: block;
+                padding: 20px 0;
+            }
+            
+            .promo-title {
+                font-size: 24px;
+                font-weight: bold;
+                padding: 0 20px;
+                margin-bottom: 20px;
+            }
+            
+            .promo-container {
+                display: flex;
+                justify-content: space-between;
+                padding: 0 20px;
+            }
+            
+            .promo-card {
+                width: 30%;
+                border-radius: 15px;
+                overflow: hidden;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+                transform: scale(1);
+                transition: transform 0.3s ease;
+            }
+            
+            .promo-card:hover {
+                transform: scale(1.05);
+            }
+            
+            .promo-img {
+                width: 100%;
+                height: 100px;
+                object-fit: cover;
+            }
+            
+            .price {
+                text-align: center;
+                font-size: 18px;
+                font-weight: bold;
+                padding: 12px 0;
+                background-color: white;
+            }
+            
+            /* Hide desktop products section in mobile */
+            .section-title, .products-container {
+                display: none;
+            }
+            
+            /* Show bottom navigation in mobile view */
+            .bottom-nav {
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                padding: 10px 0;
+            }
+            
+            .bottom-nav-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-decoration: none;
+                color: #333;
+                font-size: 11px;
+            }
+            
+            .bottom-nav-icon {
+                font-size: 20px;
+                margin-bottom: 3px;
+            }
+            
+            .active {
+                color: #333;
+                font-weight: bold;
+            }
+
+            /* Adjust spacing for bottom nav */
+            .page-content {
+                margin-bottom: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+        
+    <!-- Mobile Version -->
+    <div class="page-content">
+        <!-- Mobile Icon Navigation -->
+        <div class="category-nav">
+            <a asp-controller="Menu" asp-action="Menu" class="category-item">
+                <div class="category-icon"><i class="fas fa-hamburger"></i></div>
+                <div class="category-text">Menú</div>
+            </a>
+            <a asp-controller="Promos" asp-action="Promos" class="category-item">
+                <div class="category-icon"><i class="fas fa-tags"></i></div>
+                <div class="category-text">Promociones</div>
+            </a>
+            <a asp-controller="Cocteles" asp-action="Cocteles" class="category-item">
+                <div class="category-icon"><i class="fas fa-cocktail"></i></div>
+                <div class="category-text">Cocteles</div>
+            </a>
+            <a asp-controller="MenuRecomendacion" asp-action="Recomendacion" class="category-item">
+                <div class="category-icon"><i class="fas fa-list-alt"></i></div>
+                <div class="category-text">Recomendación</div>
+            </a>
+        </div>
+        
+        <!-- Hero Banner with Cocktail Image (Carousel) -->
+        <div class="hero-banner">
+            <div class="carousel-container">
+                <div class="carousel-slide">
+                    <img src="/api/placeholder/600/300" alt="Cocktail" class="hero-img">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Promo Section -->
+        <div class="promo-section">
+            <h2 class="promo-title">Promociones</h2>
+            <div class="promo-container">
+                <div class="promo-card">
+                    <img src="/api/placeholder/150/80" alt="Pizza" class="promo-img">
+                    <div class="price">$10</div>
+                </div>
+                <div class="promo-card">
+                    <img src="/api/placeholder/150/80" alt="Sandwich" class="promo-img">
+                    <div class="price">$9</div>
+                </div>
+                <div class="promo-card">
+                    <img src="/api/placeholder/150/80" alt="Bebidas" class="promo-img">
+                    <div class="price">$9</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Desktop Category Navigation -->
+    <div class="category-nav desktop-category">
+        <a href="#" class="category-item active-category">
+            <img src="/api/placeholder/50/50" alt="Hamburguesas" class="category-icon">
+            <div class="category-text">Hamburguesas</div>
+        </a>
+        <a href="#" class="category-item">
+            <img src="/api/placeholder/50/50" alt="Pollo" class="category-icon">
+            <div class="category-text">Pollo</div>
+        </a>
+        <a href="#" class="category-item">
+            <img src="/api/placeholder/50/50" alt="Para acompañar" class="category-icon">
+            <div class="category-text">Para acompañar</div>
+        </a>
+        <a href="#" class="category-item">
+            <img src="/api/placeholder/50/50" alt="Bebidas" class="category-icon">
+            <div class="category-text">Bebidas</div>
+        </a>
+        <a href="#" class="category-item">
+            <img src="/api/placeholder/50/50" alt="Postres" class="category-icon">
+            <div class="category-text">Postres</div>
+        </a>
+        <a href="#" class="category-item">
+            <img src="/api/placeholder/50/50" alt="Desayunos" class="category-icon">
+            <div class="category-text">Desayunos</div>
+        </a>
+        <a href="#" class="category-item">
+            <img src="/api/placeholder/50/50" alt="McCafé" class="category-icon">
+            <div class="category-text">McCafé</div>
+        </a>
+        <a href="#" class="category-item">
+            <img src="/api/placeholder/50/50" alt="McCombos" class="category-icon">
+            <div class="category-text">McCombos</div>
+        </a>
+        <a href="#" class="category-item">
+            <img src="/api/placeholder/50/50" alt="Cajita Feliz" class="category-icon">
+            <div class="category-text">Cajita Feliz</div>
+        </a>
+    </div>
+    
+    <!-- Products Section (Desktop Only) -->
+    <h1 class="section-title">Hamburguesas</h1>
+    <div class="products-container">
+        <div class="product-card">
+            <img src="/api/placeholder/200/200" alt="Big Mac" class="product-img">
+            <div class="product-name">Big Mac</div>
+        </div>
+        <div class="product-card">
+            <img src="/api/placeholder/200/200" alt="Cuarto de Libra Con Queso" class="product-img">
+            <div class="product-name">Cuarto de Libra Con Queso</div>
+        </div>
+        <div class="product-card">
+            <img src="/api/placeholder/200/200" alt="Doble Cuarto de Libra con Queso" class="product-img">
+            <div class="product-name">Doble Cuarto de Libra con Queso</div>
+        </div>
+        <div class="product-card">
+            <img src="/api/placeholder/200/200" alt="McNífica" class="product-img">
+            <div class="product-name">McNífica</div>
+        </div>
+        <div class="product-card">
+            <img src="/api/placeholder/200/200" alt="Doble McNífica" class="product-img">
+            <div class="product-name">Doble McNífica</div>
+        </div>
+    </div>
+    
+    <!-- Mobile Bottom Navigation -->
+    <nav class="bottom-nav">
+        <a href="#" class="bottom-nav-item active">
+            <div class="bottom-nav-icon">🏠</div>
+            <div>Inicio</div>
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <div class="bottom-nav-icon">🔍</div>
+            <div>Buscar</div>
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <div class="bottom-nav-icon">🔔</div>
+            <div>Notificaciones</div>
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <div class="bottom-nav-icon">🛒</div>
+            <div>Carrito</div>
+        </a>
+        <a href="#" class="bottom-nav-item">
+            <div class="bottom-nav-icon">👤</div>
+            <div>Perfil</div>
+        </a>
+    </nav>
+</body>
+</html>

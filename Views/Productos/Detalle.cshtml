@@ -1,0 +1,400 @@
+﻿@model ProyectoIdentity.Models.Producto
+@{
+    ViewData["Title"] = Model.Nombre;
+}
+
+<style>
+    .product-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .product-header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .product-image-container {
+        flex: 1;
+        min-width: 300px;
+        position: relative;
+    }
+
+    .product-image {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .product-info {
+        flex: 1;
+        min-width: 300px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-title {
+        font-size: 2.2em;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .product-description {
+        font-size: 1.1em;
+        color: #555;
+        margin-bottom: 20px;
+    }
+
+    .product-price {
+        font-size: 1.6em;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+
+    .product-points {
+        color: #555;
+        margin-bottom: 20px;
+        font-size: 0.95em;
+    }
+
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .quantity-btn {
+        width: 32px;
+        height: 32px;
+        border: 1px solid #ddd;
+        background-color: #f0f0f0;
+        border-radius: 50%;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .quantity-input {
+        width: 40px;
+        height: 32px;
+        text-align: center;
+        border: 1px solid #ddd;
+        margin: 0 10px;
+    }
+
+    .btn-cart {
+        background-color: #ffc107;
+        color: #000;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .category-header-touch {
+        display: flex;
+        align-items: center;
+        background-color: #ffffff;
+        padding: 8px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        transition: all 0.2s ease;
+        position: absolute;
+        top: 15px;
+        right: 15px;
+    }
+
+        .category-header-touch:hover {
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+    .category-icon {
+        width: 28px;
+        height: 28px;
+        margin-right: 8px;
+    }
+
+    .touchable-text {
+        color: #333;
+        text-decoration: none;
+        font-size: 14px;
+        line-height: 1.2;
+        font-weight: 500;
+    }
+
+    .tight-line {
+        line-height: 1.1;
+    }
+
+    .accordion-section {
+        margin-top: 30px;
+    }
+
+    .accordion-item {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        overflow: hidden;
+    }
+
+    .accordion-header {
+        padding: 15px;
+        background-color: #f8f9fa;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .accordion-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin: 0;
+        color: #000;
+    }
+
+    .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        background-color: white;
+    }
+
+    .accordion-content-inner {
+        padding: 15px;
+    }
+
+    /* Estilos para la tabla de nutrición */
+    .nutrition-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .nutrition-table tr {
+            border-bottom: 1px solid #eee;
+        }
+
+            .nutrition-table tr:last-child {
+                border-bottom: none;
+            }
+
+        .nutrition-table td {
+            padding: 8px 0;
+        }
+
+            .nutrition-table td:first-child {
+                font-weight: bold;
+                width: 40%;
+            }
+
+    /* Estilos para la lista de alérgenos */
+    .allergen-list {
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+    }
+
+        .allergen-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+            .allergen-list li:last-child {
+                border-bottom: none;
+            }
+
+    /* Responsive */
+    media (max-width: 768px) {
+        .product-header
+
+    {
+        flex-direction: column;
+    }
+
+    }
+</style>
+
+<div class="product-container">
+    <div class="product-header">
+        <div class="product-image-container">
+            <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.Imagen)" alt="@Model.Nombre" class="product-image" />
+            <div class="category-header-touch">
+                <img src="~/images1/ra.png" alt="Realidad Aumentada" class="category-icon" />
+                <a href="#" class="touchable-text">
+                    <span class="tight-line">Realidad</span><br />
+                    <span class="tight-line">Aumentada</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="product-info">
+            <h1 class="product-title">@Model.Nombre</h1>
+            <p class="product-description">@Model.Descripcion</p>
+
+            <div class="product-price">Precio: $@Model.Precio</div>
+            <div class="product-points">Ganas @(Model.Precio * 100) pts</div>
+
+            <div class="quantity-control">
+                <button type="button" class="quantity-btn" id="decrease-btn">-</button>
+                <input type="number" id="cantidad" value="1" min="1" class="quantity-input" />
+                <button type="button" class="quantity-btn" id="increase-btn">+</button>
+            </div>
+
+            <button type="button" class="btn-cart" id="add-to-cart-btn">
+                Añadir al carrito
+            </button>
+        </div>
+    </div>
+
+    <div class="accordion-section">
+        <h2>Más información</h2>
+
+        <div class="accordion-item">
+            <div class="accordion-header" id="nutrition-header">
+                <h3 class="accordion-title">Información nutricional</h3>
+                <span>›</span>
+            </div>
+            <div class="accordion-content" id="nutrition-content">
+                <div class="accordion-content-inner">
+                    <table class="nutrition-table">
+                        @if (!string.IsNullOrEmpty(Model.InfoNutricional))
+                        {
+                            @foreach (var linea in Model.InfoNutricional.Split('|'))
+                            {
+                                var partes = linea.Split(':');
+                                if (partes.Length == 2)
+                                {
+                                    <tr>
+                                        <td>@partes[0]</td>
+                                        <td>@partes[1]</td>
+                                    </tr>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr><td>Peso</td><td>210g</td></tr>
+                            <tr><td>Calorías</td><td>517Kcal - 26%</td></tr>
+                            <tr><td>Grasas</td><td>26g - 33%</td></tr>
+                            <tr><td>Carbohidratos</td><td>42g - 14%</td></tr>
+                            <tr><td>Proteínas</td><td>28g - 57%</td></tr>
+                            <tr><td>Sodio</td><td>1020mg - 42%</td></tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="accordion-item">
+            <div class="accordion-header" id="allergen-header">
+                <h3 class="accordion-title">Información alérgenos</h3>
+                <span>›</span>
+            </div>
+            <div class="accordion-content" id="allergen-content">
+                <div class="accordion-content-inner">
+                    <ul class="allergen-list">
+                        @if (!string.IsNullOrEmpty(Model.Alergenos))
+                        {
+                            @foreach (var alergeno in Model.Alergenos.Split('|'))
+                            {
+                                <li>@alergeno</li>
+                            }
+                        }
+                        else
+                        {
+                            <li>Contiene lácteos</li>
+                            <li>Puede contener gluten</li>
+                            <li>Puede contener trazas de frutos secos</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Control de cantidad
+    document.getElementById('decrease-btn').addEventListener('click', function () {
+        var input = document.getElementById('cantidad');
+        var value = parseInt(input.value);
+        if (value > 1) {
+            input.value = value - 1;
+        }
+    });
+
+    document.getElementById('increase-btn').addEventListener('click', function () {
+        var input = document.getElementById('cantidad');
+        var value = parseInt(input.value);
+        input.value = value + 1;
+    });
+
+    // Añadir al carrito
+    document.getElementById('add-to-cart-btn').addEventListener('click', function () {
+        var cantidad = parseInt(document.getElementById('cantidad').value);
+        var productId = '@Model.Id';
+        var productName = '@Model.Nombre';
+        var productPrice = @Model.Precio;
+
+        // Obtener carrito actual
+        var carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+        // Verificar si el producto ya está en el carrito
+        var existingIndex = carrito.findIndex(item => item.id === productId);
+
+        if (existingIndex >= 0) {
+            // Si ya existe, aumentar cantidad
+            carrito[existingIndex].cantidad += cantidad;
+        } else {
+            // Si no existe, añadir nuevo
+            carrito.push({
+                id: productId,
+                nombre: productName,
+                precio: productPrice,
+                cantidad: cantidad
+            });
+        }
+
+        // Guardar carrito actualizado
+        localStorage.setItem('carrito', JSON.stringify(carrito));
+
+        // Actualizar contador carrito (si existe la función)
+        if (window.actualizarContadorCarrito) {
+            window.actualizarContadorCarrito();
+        }
+
+        // Notificar al usuario
+        alert(cantidad + ' ' + productName + ' añadido(s) al carrito');
+    });
+
+    // Acordeón
+    document.querySelectorAll('.accordion-header').forEach(function (header) {
+        header.addEventListener('click', function () {
+            // Obtener el contenido relacionado
+            var targetId = this.id.replace('header', 'content');
+            var content = document.getElementById(targetId);
+
+            // Si está abierto, cerrarlo
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                this.querySelector('span').style.transform = 'rotate(0deg)';
+            } else {
+                // De lo contrario, abrirlo
+                content.style.maxHeight = content.scrollHeight + 'px';
+                this.querySelector('span').style.transform = 'rotate(90deg)';
+            }
+        });
+    });
+</script>

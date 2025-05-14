@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Menú por Categoría";
+}
+
+<style>
+    .menu-container {
+        padding: 20px;
+        background-color: white;
+    }
+
+    .menu-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .menu-item {
+        display: block;
+        width: 180px;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        text-align: center;
+        text-decoration: none;
+        color: inherit;
+        background-color: #fefefe;
+        transition: transform 0.2s;
+    }
+
+        .menu-item:hover {
+            transform: scale(1.03);
+        }
+
+        .menu-item img {
+            width: 100%;
+            height: 120px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+
+    .menu-item-text {
+        margin-top: 10px;
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+
+    media (max-width: 600px) {
+        .menu-item
+
+    {
+        width: 100%;
+    }
+
+    }
+</style>
+
+<div class="menu-container">
+    <h2 class="text-center mb-4">Menú por Categoría</h2>
+
+    <div class="menu-grid">
+        <a asp-action="PorCategoria" asp-route-categoria="Pizza" class="menu-item">
+            <img src="~/images1/pizzas.png" alt="Pizza" />
+            <div class="menu-item-text">Pizza</div>
+        </a>
+
+        <a asp-action="PorCategoria" asp-route-categoria="Sánduches" class="menu-item">
+            <img src="~/images1/sanduches.png" alt="Sánduches" />
+            <div class="menu-item-text">Sánduches</div>
+        </a>
+
+        <a asp-action="PorCategoria" asp-route-categoria="Picadas" class="menu-item">
+            <img src="~/images1/picadas.png" alt="Picadas" />
+            <div class="menu-item-text">Picadas</div>
+        </a>
+
+        <a asp-action="PorCategoria" asp-route-categoria="Bebidas" class="menu-item">
+            <img src="~/images1/bebidas.png" alt="Bebidas" />
+            <div class="menu-item-text">Bebidas</div>
+        </a>
+
+        <a asp-action="PorCategoria" asp-route-categoria="Promo" class="menu-item">
+            <img src="~/images1/promos.png" alt="Promo" />
+            <div class="menu-item-text">Promo</div>
+        </a>
+
+        <a asp-action="PorCategoria" asp-route-categoria="Cerveza" class="menu-item">
+            <img src="~/images1/cervesa.webp" alt="Cerveza" />
+            <div class="menu-item-text">Cerveza</div>
+        </a>
+
+        <a asp-action="PorCategoria" asp-route-categoria="Cocteles" class="menu-item">
+            <img src="~/images1/cocteles.webp" alt="Cocteles" />
+            <div class="menu-item-text">Cocteles</div>
+        </a>
+
+        <a asp-action="PorCategoria" asp-route-categoria="Shot" class="menu-item">
+            <img src="~/images1/shots.jpg" alt="Shot" />
+            <div class="menu-item-text">Shot</div>
+        </a>
+    </div>
+</div>
+</div>

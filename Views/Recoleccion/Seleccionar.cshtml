@@ -1,0 +1,243 @@
+﻿@model IEnumerable<ProyectoIdentity.Models.CollectionPoint>
+@{
+    ViewData["Title"] = "Seleccionar Punto de Recolección";
+}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Selecciona un punto de recolección</h2>
+        </div>
+        <div class="card-body">
+            <p class="lead">Selecciona el punto donde recogerás tu pedido:</p>
+
+            <div class="alert alert-info mb-3">
+                <div id="loadingLocation">
+                    <i class="fas fa-spinner fa-spin"></i> Obteniendo tu ubicación para calcular distancias...
+                </div>
+                <div id="locationError" style="display: none;">
+                    <i class="fas fa-exclamation-triangle"></i> No se pudo obtener tu ubicación.
+                    <button id="retryLocation" class="btn btn-sm btn-warning ms-2">Reintentar</button>
+                </div>
+@*                 <div id="coordsDebug" style="display: block;" class="mt-2">
+                    <strong>Coordenadas:</strong> <span id="coordValues">Calculando...</span>
+                </div> *@
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                @foreach (var punto in Model)
+                {
+                    <div class="col">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">@punto.Name</h5>
+                                <p class="card-text">
+                                    <strong>Sucursal:</strong> @punto.Sucursal.Nombre<br />
+                                    <strong>Dirección:</strong> @punto.Address<br />
+@*                                     <strong>Descripción:</strong> @punto.Descripcion
+ *@                                </p>
+                                <p class="card-text">
+                                    <strong>Distancia:</strong>
+                                    <span class="distance-value"
+                                          data-id="@punto.Id"
+                                          data-lat="@punto.Sucursal.Latitud.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                                          data-lng="@punto.Sucursal.Longitud.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+                                        Calculando...
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="card-footer bg-transparent">
+                                <form asp-action="Confirmar" asp-controller="Recoleccion" method="post" class="distance-form">
+                                    <input type="hidden" name="id" value="@punto.Id" />
+                                    <input type="hidden" name="userLat" class="userLat-input" id="userLat-@punto.Id" value="" />
+                                    <input type="hidden" name="userLng" class="userLng-input" id="userLng-@punto.Id" value="" />
+                                    <!-- Campo adicional para la distancia -->
+                                    <input type="hidden" name="distancia" class="distancia-input" id="distancia-@punto.Id" value="" />
+                                    <button type="submit" class="btn btn-primary w-100">Seleccionar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="mt-4">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Elementos del DOM
+            const loadingLocation = document.getElementById('loadingLocation');
+            const locationError = document.getElementById('locationError');
+            const retryLocationBtn = document.getElementById('retryLocation');
+            const coordsDebug = document.getElementById('coordsDebug');
+            const coordValues = document.getElementById('coordValues');
+            const distanceElements = document.querySelectorAll('.distance-value');
+            const userLatInputs = document.querySelectorAll('.userLat-input');
+            const userLngInputs = document.querySelectorAll('.userLng-input');
+            const distanciaInputs = document.querySelectorAll('.distancia-input');
+
+            // Variables globales para guardar las coordenadas
+            let currentUserLat = null;
+            let currentUserLng = null;
+
+            // Objeto para almacenar las distancias calculadas
+            let distanciasCalculadas = {};
+
+            // Función para calcular la distancia usando exactamente la misma fórmula que en el servidor
+            function calcularDistancia(lat1, lon1, lat2, lon2) {
+                // Asegurarse de que las coordenadas son números con el formato correcto
+                lat1 = parseFloat(String(lat1).replace(',', '.'));
+                lon1 = parseFloat(String(lon1).replace(',', '.'));
+                lat2 = parseFloat(String(lat2).replace(',', '.'));
+                lon2 = parseFloat(String(lon2).replace(',', '.'));
+
+                console.log(`Calculando distancia entre: (${lat1}, ${lon1}) y (${lat2}, ${lon2})`);
+
+                // Validación de coordenadas
+                if (isNaN(lat1) || isNaN(lon1) || isNaN(lat2) || isNaN(lon2)) {
+                    console.error("Coordenadas inválidas", { lat1, lon1, lat2, lon2 });
+                    return 0;
+                }
+
+                // Fórmula de Haversine (igual que en el servidor)
+                const toRad = function (deg) {
+                    return deg * (Math.PI / 180);
+                };
+
+                const R = 6371; // Radio de la Tierra en kilómetros
+                const dLat = toRad(lat2 - lat1);
+                const dLon = toRad(lon2 - lon1);
+
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                const distance = R * c;
+
+                console.log(`Distancia calculada: ${distance} km`);
+
+                return distance;
+            }
+
+            // Función para actualizar las distancias en la página
+            function actualizarDistancias(userLat, userLng) {
+                // Guardar coordenadas actuales
+                currentUserLat = userLat;
+                currentUserLng = userLng;
+
+                // Mostrar coordenadas para depuración
+                coordValues.textContent = `${userLat}, ${userLng}`;
+
+                console.log(`Actualizando distancias con coordenadas: ${userLat}, ${userLng}`);
+
+                // Actualizar los campos de entrada ocultos con formato invariante
+                userLatInputs.forEach(input => {
+                    input.value = String(userLat).replace(',', '.');
+                });
+                userLngInputs.forEach(input => {
+                    input.value = String(userLng).replace(',', '.');
+                });
+
+                // Calcular y mostrar distancias
+                distanceElements.forEach(function (element) {
+                    const puntoId = element.getAttribute('data-id');
+                    const sucursalLat = parseFloat(element.getAttribute('data-lat').replace(',', '.'));
+                    const sucursalLng = parseFloat(element.getAttribute('data-lng').replace(',', '.'));
+
+                    console.log(`Sucursal coords: ${sucursalLat}, ${sucursalLng}`);
+
+                    // Calcular la distancia
+                    const distancia = calcularDistancia(userLat, userLng, sucursalLat, sucursalLng);
+                    const distanciaRedondeada = distancia.toFixed(2);
+
+                    // Guardar la distancia calculada
+                    distanciasCalculadas[puntoId] = distanciaRedondeada;
+
+                    // Actualizar el campo oculto de distancia
+                    const distanciaInput = document.getElementById(`distancia-${puntoId}`);
+                    if (distanciaInput) {
+                        distanciaInput.value = distanciaRedondeada;
+                    }
+
+                    // Formatear la distancia a 2 decimales
+                    element.textContent = distanciaRedondeada + ' km';
+
+                    // Quitar clases anteriores
+                    element.classList.remove('text-success', 'text-warning', 'text-danger');
+
+                    // Colorear según la distancia
+                    if (distancia < 3) {
+                        element.classList.add('text-success');
+                        element.innerHTML += ' <i class="fas fa-check-circle"></i>';
+                    } else if (distancia < 7) {
+                        element.classList.add('text-warning');
+                    } else {
+                        element.classList.add('text-danger');
+                    }
+                });
+
+                // Ocultar indicador de carga
+                loadingLocation.style.display = 'none';
+                coordsDebug.style.display = 'block';
+            }
+
+            // Función para obtener la ubicación
+            function obtenerUbicacion() {
+                loadingLocation.style.display = 'block';
+                locationError.style.display = 'none';
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        function (position) {
+                            const userLat = position.coords.latitude;
+                            const userLng = position.coords.longitude;
+
+                            console.log(`Ubicación obtenida: ${userLat}, ${userLng}`);
+                            console.log(`Precisión: ${position.coords.accuracy} metros`);
+
+                            actualizarDistancias(userLat, userLng);
+                        },
+                        function (error) {
+                            console.error(`Error al obtener ubicación: ${error.message}`);
+                            loadingLocation.style.display = 'none';
+                            locationError.style.display = 'block';
+
+                            // Usar coordenadas predeterminadas para Quito
+                            actualizarDistancias(-0.1857, -78.4954);
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    console.error('Geolocalización no es soportada por este navegador');
+                    loadingLocation.style.display = 'none';
+                    locationError.style.display = 'block';
+
+                    // Usar coordenadas predeterminadas para Quito
+                    actualizarDistancias(-0.1857, -78.4954);
+                }
+            }
+
+            // Botón para volver a intentar obtener la ubicación
+            if (retryLocationBtn) {
+                retryLocationBtn.addEventListener('click', function () {
+                    obtenerUbicacion();
+                });
+            }
+
+            // Obtener ubicación al cargar la página
+            obtenerUbicacion();
+        });
+    </script>
+}
